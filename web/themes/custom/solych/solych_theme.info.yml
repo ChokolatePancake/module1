@@ -1,0 +1,20 @@
+name: 'Solych Theme'
+description: 'Theme for cats site'
+type: theme
+
+core_version_requirement: ^10
+base theme: gin
+
+libraries:
+  - solych_theme/global
+
+regions:
+  header: Header
+  primary_menu: Primary menu
+  content: Content
+  footer: Footer
+parameters:
+  twig.config:
+    debug: true
+    auto_reload: true
+    cache: false
