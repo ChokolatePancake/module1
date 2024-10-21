@@ -1,0 +1,7 @@
+solych.cats:
+  path: '/solych/cats'
+  defaults:
+    _controller: '\Drupal\solych\Controller\CatsPageController::content'
+    _title: 'Cats'
+  requirements:
+    _permission: 'access content'
