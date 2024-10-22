@@ -6,3 +6,4 @@ vendor/
 /web/sites/default/settings.php
 composer.lock
 database.sql
+/web/node_modules/

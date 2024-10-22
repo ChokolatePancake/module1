@@ -10,6 +10,7 @@ function solych_theme($existing, $type, $theme, $path) {
       'variables' => [
         'markup' => NULL,
         'title' => NULL,
+        'cats_form' => NULL,
       ],
       'template' => 'cats-page',
       'path' => \Drupal::service('module_handler')->getModule('solych')->getPath() . '/templates',

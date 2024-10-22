@@ -1,0 +1,9 @@
+.cats__form {
+  #edit-submit.form-submit {
+    background: $blue;
+    transition: all 0.5s ease;
+    &:hover {
+      background: $dark-blue;
+    }
+  }
+}

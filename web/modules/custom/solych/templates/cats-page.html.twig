@@ -1,13 +1,12 @@
-{#Main cats page#}
+{# Main cats page #}
 <div class="cats">
   <h1>{{ title }}</h1>
   <p>{{ markup }}</p>
 
-  <p>If you see that line than drupal use template from custom module</p>
-{#  #}{# Form #}
-{#  <div class="cats__form">#}
-{#    #}{#      {{ form }}#}
-{#  </div>#}
+  {# Form #}
+  <div class="cats__form">
+          {{ cats_form }}
+  </div>
 
 {#  #}{# List of posts #}
 {#  <div class="cats__list">#}
