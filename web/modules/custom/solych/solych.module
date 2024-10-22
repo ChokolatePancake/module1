@@ -4,15 +4,15 @@
  * Implements hook_theme().
  */
 function solych_theme($existing, $type, $theme, $path) {
-  $path_resolver = \Drupal::service('extension.path.resolver');
-  $template_path = $path_resolver->getPath('module', 'solych') . '/templates';
+  $template_path = \Drupal::service('extension.path.resolver')->getPath('module', 'solych') . '/templates';
   return [
-    'page' => [
+    'cats-page' => [
       'variables' => [
+        'markup' => NULL,
         'title' => NULL,
       ],
-      'template' => 'page',
-      'path' => $template_path,
+      'template' => 'cats-page',
+      'path' => \Drupal::service('module_handler')->getModule('solych')->getPath() . '/templates',
     ]
   ];
 }
