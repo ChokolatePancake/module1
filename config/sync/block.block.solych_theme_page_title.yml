@@ -1,0 +1,20 @@
+uuid: 663d4575-a580-4fdd-ad9a-18fb4b2186b2
+langcode: en
+status: true
+dependencies:
+  theme:
+    - solych_theme
+_core:
+  default_config_hash: 6aOgWsNTXjqrDm98TXSAjP6qd2nCijD1xw45MrnbK-Y
+id: solych_theme_page_title
+theme: solych_theme
+region: header
+weight: -5
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  label_display: '0'
+  provider: core
+visibility: {  }

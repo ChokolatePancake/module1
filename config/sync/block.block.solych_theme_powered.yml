@@ -1,0 +1,22 @@
+uuid: 3cb9b31a-c37c-4858-97b0-a16e002bcafb
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - solych_theme
+_core:
+  default_config_hash: eYL19CLDyinGTWYQfBD1DswWzglEotE_kHnHx3AxTXM
+id: solych_theme_powered
+theme: solych_theme
+region: header
+weight: 0
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: 'Powered by Drupal'
+  label_display: '0'
+  provider: system
+visibility: {  }

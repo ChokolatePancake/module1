@@ -1,0 +1,22 @@
+uuid: d6d650dd-ad1f-4727-8255-7103de5a96d7
+langcode: en
+status: true
+dependencies:
+  theme:
+    - solych_theme
+_core:
+  default_config_hash: nGE3EoPQQaQCuqTUtZgw0-KIzmrqdKDzdNQf2JyPUt4
+id: solych_theme_primary_local_tasks
+theme: solych_theme
+region: header
+weight: -4
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: 'Primary tabs'
+  label_display: '0'
+  provider: core
+  primary: true
+  secondary: false
+visibility: {  }

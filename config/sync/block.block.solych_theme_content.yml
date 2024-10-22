@@ -1,0 +1,22 @@
+uuid: 3c03dfb1-334a-432b-a034-7355ac3a975f
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - solych_theme
+_core:
+  default_config_hash: erQSEZF2XUjNmgTl0uNRBzmg18ZGXwUcw2FhApoeuHk
+id: solych_theme_content
+theme: solych_theme
+region: content
+weight: 0
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  label_display: '0'
+  provider: system
+visibility: {  }
