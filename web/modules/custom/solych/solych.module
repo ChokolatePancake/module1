@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function solych_theme($existing, $type, $theme, $path) {
+  $path_resolver = \Drupal::service('extension.path.resolver');
+  $template_path = $path_resolver->getPath('module', 'solych') . '/templates';
+  return [
+    'page' => [
+      'variables' => [
+        'title' => NULL,
+      ],
+      'template' => 'page',
+      'path' => $template_path,
+    ]
+  ];
+}
