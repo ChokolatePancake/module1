@@ -1,1 +1,1 @@
-.cats__form #edit-submit.form-submit{background:#4874bf;-webkit-transition:all .5s ease;transition:all .5s ease}.cats__form #edit-submit.form-submit:hover{background:#3760a7}
+.cats__form #edit-submit.form-submit,.cats__form .button{background:#4874bf;-webkit-transition:all .5s ease;transition:all .5s ease;color:#fff}.cats__form #edit-submit.form-submit:hover,.cats__form .button:hover{background-color:#3760a7!important;color:#fff}

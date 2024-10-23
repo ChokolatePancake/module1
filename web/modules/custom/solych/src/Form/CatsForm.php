@@ -2,6 +2,7 @@
 
 namespace Drupal\solych\Form;
 
+use Drupal\solych\CatsFormValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -9,7 +10,11 @@ use Drupal\Core\Messenger\MessengerInterface;
 
 class CatsForm extends FormBase {
 
-  // Property to hold the Messenger service.
+  /**
+   * The Messenger service for displaying messages.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
   protected $messenger;
 
 
@@ -24,10 +29,7 @@ class CatsForm extends FormBase {
   }
 
   /**
-   * Gets the unique ID of the form.
-   *
-   * @return string
-   *   The unique ID for this form.
+   * {@inheritdoc}
    */
   public function getFormId() {
     return 'solych_cats_form';
@@ -55,13 +57,32 @@ class CatsForm extends FormBase {
     $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Submit'),
+      '#ajax' => [
+        'callback' => '::ajaxSubmit',
+        'wrapper' => 'cats-form-messages',
+        'effect' => 'fade',
+      ]
     ];
+
+    $form['#prefix'] = '<div id="cats-form-messages">';
+
+    $form['#suffix'] = '</div>';
 
     return $form;
   }
 
   /**
-   * Handles form submission.
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    // Create an instance of the validator and validate the form.
+    $validator = new CatsFormValidator();
+    $validator->validateForm($this->getFormId(), $form, $form_state);
+  }
+
+
+  /**
+   * Handles default form submission.
    *
    * @param array $form
    *   The form array.
@@ -69,23 +90,40 @@ class CatsForm extends FormBase {
    *   The current state of the form.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $cat_name = $form_state->getValue('cat_name');
-
-    $this->messenger->addMessage($this->t('We are glad to see your cat @cat_name!', ['@cat_name' => $cat_name]));
+    // Handles by AJAX
   }
 
   /**
-   * Static method to create an instance of the class and inject services.
+   * Handles AJAX form submission.
    *
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   *   The service container that holds all available services.
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
    *
-   * @return static
-   *   An instance of the class that handles the form.
+   * @return array
+   *   A render array with the updated form.
+   */
+  public function ajaxSubmit(array $form, FormStateInterface $form_state) {
+    if ($form_state->hasAnyErrors()) {
+      return $form;
+    }
+
+    $cat_name = $form_state->getValue('cat_name');
+
+    $this->messenger->addMessage($this->t('We are glad to see your cat @cat_name!', ['@cat_name' => $cat_name]));
+
+    $form_state->setRebuild(TRUE);
+    $form['cat_name']['#value'] = '';
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('messenger')
+      $container->get('messenger'),
     );
   }
 }
