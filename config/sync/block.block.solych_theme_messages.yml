@@ -11,7 +11,7 @@ _core:
 id: solych_theme_messages
 theme: solych_theme
 region: header
-weight: -5
+weight: -4
 provider: null
 plugin: system_messages_block
 settings:

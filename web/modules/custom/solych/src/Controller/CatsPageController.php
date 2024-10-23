@@ -16,8 +16,8 @@ class CatsPageController extends ControllerBase {
 
     return [
       '#theme' => 'cats-page',
-      '#title' => 'Cats page',
-      '#markup' =>'Hello! You can add here a photo of your cat.',
+      '#title' => $this->t('Cats page'),
+      '#markup' => $this->t('Hello! You can add here a photo of your cat.'),
       '#cats_form' => $form,
     ];
   }

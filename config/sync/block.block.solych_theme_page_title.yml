@@ -9,7 +9,7 @@ _core:
 id: solych_theme_page_title
 theme: solych_theme
 region: header
-weight: -5
+weight: -7
 provider: null
 plugin: page_title_block
 settings:

@@ -9,7 +9,7 @@ _core:
 id: solych_theme_secondary_local_tasks
 theme: solych_theme
 region: header
-weight: -2
+weight: -1
 provider: null
 plugin: local_tasks_block
 settings:
