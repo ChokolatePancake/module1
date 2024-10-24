@@ -7,3 +7,4 @@ vendor/
 composer.lock
 database.sql
 /web/node_modules/
+/web/themes/contrib/

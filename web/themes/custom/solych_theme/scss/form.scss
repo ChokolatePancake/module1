@@ -1,11 +1,18 @@
 .cats__form {
-  #edit-submit.form-submit, .button {
-    background: $blue;
+  .submit-cats-form {
+    background: $blue !important;
     transition: all 0.5s ease;
     color: $white;
     &:hover {
       background-color: $dark-blue !important;
       color: $white;
     }
+  }
+
+  .hint {
+    background: $yellow;
+    padding: 1rem;
+    color: $light-yellow;
+    border-radius: 0.75rem;
   }
 }
