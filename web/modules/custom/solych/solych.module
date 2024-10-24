@@ -5,6 +5,7 @@
  */
 function solych_theme($existing, $type, $theme, $path) {
   $template_path = \Drupal::service('extension.path.resolver')->getPath('module', 'solych') . '/templates';
+
   return [
     'cats-page' => [
       'variables' => [
@@ -13,7 +14,7 @@ function solych_theme($existing, $type, $theme, $path) {
         'cats_form' => NULL,
       ],
       'template' => 'cats-page',
-      'path' => \Drupal::service('module_handler')->getModule('solych')->getPath() . '/templates',
+      'path' => $template_path,
     ]
   ];
 }

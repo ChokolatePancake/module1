@@ -3,13 +3,19 @@
 namespace Drupal\solych\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\solych\CatsFormValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 
+/**
+ * Provides a form for adding cat and owner information with AJAX validation.
+ *
+ * This form allows users to submit their cat's name and email address, with
+ * real-time validation through AJAX. It uses a custom form validator and
+ * displays success or error messages using the Messenger service.
+ */
 class CatsForm extends FormBase {
 
   /**
@@ -18,7 +24,6 @@ class CatsForm extends FormBase {
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
   protected $messenger;
-
 
   /**
    * The custom form validator.
@@ -35,7 +40,7 @@ class CatsForm extends FormBase {
   protected $response;
 
   /**
-   * Constructor for injection Messenger service.
+   * Constructor the CatsForm class.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger service displays messages after submit
@@ -43,7 +48,16 @@ class CatsForm extends FormBase {
   public function __construct(MessengerInterface $messenger) {
     $this->messenger = $messenger;
     $this->validator = new CatsFormValidator();
-    $response = new AjaxResponse();
+    $this->response = new AjaxResponse();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('messenger'),
+    );
   }
 
   /**
@@ -71,15 +85,15 @@ class CatsForm extends FormBase {
       '#required' => TRUE,
       '#description' => $this->t('Minimal length of name:2 characters. Maximal length of name:32 characters.'),
       '#ajax' => [
-        'callback' => '::validateNameAjax',
+        'callback' => '::validateCatNameAjax',
         'event' => 'change',
-        'wrapper' => 'name-validation-message',
+        'wrapper' => 'cat-name-validation-message',
       ],
     ];
 
-    $form['name_validation_message'] = [
+    $form['cat_name_validation_message'] = [
       '#type' => 'container',
-      '#attributes' => ['id' => 'name-validation-message'],
+      '#attributes' => ['id' => 'cat-name-validation-message'],
     ];
 
     $form['email'] = [
@@ -98,7 +112,6 @@ class CatsForm extends FormBase {
       '#type' => 'container',
       '#attributes' => ['id' => 'email-validation-message'],
     ];
-
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
@@ -130,14 +143,17 @@ class CatsForm extends FormBase {
    *   A response object to manipulate the page.
    */
   public function validateEmailAjax(array &$form, FormStateInterface $form_state) {
+    $form_state->clearErrors();
+
     $email = $form_state->getValue('email');
-    $error_message = $this->validator->validateEmail($email, $form_state);
+    $is_valid = \Drupal::service('email.validator')->isValid($email);
+    $error_message = $is_valid ? '' : $this->t('The email address is not valid.');
 
     return $this->validator->handleValidationAjax('#email-validation-message', $error_message);
   }
 
   /**
-   * AJAX callback for real-time name validation.
+   * AJAX callback for real-time cat name validation.
    *
    * @param array &$form
    *   An associative array containing the structure of the form.
@@ -147,31 +163,23 @@ class CatsForm extends FormBase {
    * @return \Drupal\Core\Ajax\AjaxResponse
    *   A response object to manipulate the page.
    */
-  public function validateNameAjax(array &$form, FormStateInterface $form_state) {
-    $name = $form_state->getValue('cat_name');
-    $error_message = $this->validator->validateName($name, $form_state);
+  public function validateCatNameAjax(array &$form, FormStateInterface $form_state) {
+    $cat_name = $form_state->getValue('cat_name');
+    $error_message = $this->validator->validateCatName($cat_name, $form_state);
 
-    return $this->validator->handleValidationAjax('#name-validation-message', $error_message);
+    return $this->validator->handleValidationAjax('#cat-name-validation-message', $error_message);
   }
 
   /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $name = $form_state->getValue('cat_name');
+    $cat_name = $form_state->getValue('cat_name');
 
-    $email = $form_state->getValue('email');
-
-    $error_message = $this->validator->validateName($name, $form_state);
+    $error_message = $this->validator->validateCatName($cat_name, $form_state);
 
     if ($error_message) {
-      $form_state->setErrorByName('name', $error_message);
-    }
-
-    $error_message = $this->validator->validateEmail($email, $form_state);
-
-    if ($error_message) {
-      $form_state->setErrorByName('email', $error_message);
+      $form_state->setErrorByName('cat_name', $error_message);
     }
   }
 
@@ -214,12 +222,4 @@ class CatsForm extends FormBase {
     return $form;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('messenger'),
-    );
-  }
 }

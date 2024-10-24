@@ -4,7 +4,14 @@ namespace Drupal\solych\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\solych\Form\CatsForm;
 
+/**
+ * Provides the Cats page controller.
+ *
+ * This controller generates the Cats page, which includes a title,
+ * descriptive text, and a form for submitting cat and owner information.
+ */
 class CatsPageController extends ControllerBase {
+
   /**
    * Returns the content for the Cats page, including a form.
    *
@@ -12,7 +19,7 @@ class CatsPageController extends ControllerBase {
    *   A render array containing the title, markup, and form.
    */
   public function content() {
-    $form = \Drupal::formBuilder()->getForm(CatsForm::class);
+    $form = $this->formBuilder()->getForm(CatsForm::class);
 
     return [
       '#theme' => 'cats-page',
@@ -21,4 +28,5 @@ class CatsPageController extends ControllerBase {
       '#cats_form' => $form,
     ];
   }
+
 }
