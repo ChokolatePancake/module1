@@ -14,7 +14,7 @@ use Drupal\Core\Form\FormStateInterface;
  */
 class CatsFormValidator {
 
-/**
+  /**
  * Validates the cat's name.
  *
  * @param string $cat_name
@@ -55,5 +55,32 @@ class CatsFormValidator {
     $response->addCommand(new InvokeCommand($selector, 'html', [$message]));
 
     return $response;
+  }
+
+  /**
+   * Validates the cat's photo.
+   *
+   * @param object $file
+   *   The uploaded file object to validate.
+   *
+   * @return string|null
+   *   An error message if validation fails, or NULL if the file is valid.
+   */
+  public function validatePhoto($file, array $validators) {
+    $errors = [];
+
+    $max_size = $validators['max_size'][0] ?? NULL;
+    if ($max_size && $file->getSize() > $max_size) {
+      $errors[] = t('The uploaded file is too large. Maximum size allowed is @size MB.', ['@size' => round($max_size / (1024 * 1024), 2)]);
+    }
+
+    $allowed_extensions = $validators['allowed_extensions'] ?? [];
+    $file_extension = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
+
+    if ($allowed_extensions && !in_array($file_extension, $allowed_extensions)) {
+      $errors[] = t('The uploaded file must be in one of the following formats: @formats.', ['@formats' => implode(', ', $allowed_extensions)]);
+    }
+
+    return !empty($errors) ? implode(' ', $errors) : NULL;
   }
 }

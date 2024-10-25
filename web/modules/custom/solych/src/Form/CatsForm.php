@@ -113,6 +113,23 @@ class CatsForm extends FormBase {
       '#attributes' => ['id' => 'email-validation-message'],
     ];
 
+    $form['photo'] = [
+      '#type' => 'managed_file',
+      '#title' => $this->t('Your cat\'s photo:'),
+      '#required' => TRUE,
+      '#description' => $this->t('Allowed formats: jpeg, jpg or png(max size:2MB)'),
+      '#description_display' => 'before',
+      '#validators' => [
+        'allowed_extensions' => ['jpg', 'jpeg', 'png'],
+        'max_size' => [2 * 1024 * 1024],
+      ],
+    ];
+
+    $form['photo_validation_message'] = [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'photo-validation-message'],
+    ];
+
     $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Submit'),
@@ -181,6 +198,31 @@ class CatsForm extends FormBase {
     if ($error_message) {
       $form_state->setErrorByName('cat_name', $error_message);
     }
+
+    $file_id = $form_state->getValue('photo')[0] ?? NULL;
+    $triggering_element = $form_state->getTriggeringElement();
+    $is_submit = $triggering_element['#name'];
+
+    if ($file_id) {
+      $file = \Drupal\file\Entity\File::load($file_id);
+
+      $validators = $form['photo']['#validators'];
+      $error_message = $this->validator->validatePhoto($file, $validators);
+
+      if ($error_message) {
+        if ($is_submit === 'photo_remove_button') {
+          $this->messenger->addWarning(t('Don\'t forget to upload photo'));
+        } elseif ($is_submit !== 'photo_upload_button') {
+          $form_state->setErrorByName('photo', $error_message);
+          $form_state->setValue('photo', []);
+          $file->delete();
+        } else {
+          $this->messenger->addWarning($error_message);
+        }
+      }
+    } else {
+      $form_state->setErrorByName('photo', $this->t('Please upload a photo.'));
+    }
   }
 
 
@@ -219,6 +261,7 @@ class CatsForm extends FormBase {
     $form_state->setRebuild(TRUE);
     $form['cat_name']['#value'] = '';
     $form['email']['#value'] = '';
+    $form['photo']['#value'] = '';
     return $form;
   }
 
