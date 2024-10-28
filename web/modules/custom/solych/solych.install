@@ -1,0 +1,75 @@
+<?php
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_schema().
+ */
+function solych_schema() {
+  $schema['solych'] = [
+    'description' => 'The table for storing information about cat and its owner',
+    'fields' => [
+      'id' => [
+        'description' => 'The primary identifier for record',
+        'type' => 'serial',
+        'not null' => true,
+        'unsigned' => true,
+      ],
+      'cat_name' => [
+        'description' => 'The cat\'s name',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => true,
+      ],
+      'email' => [
+        'description' => 'The owner\'s email',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => true,
+      ],
+      'photo' => [
+        'description' => 'The photo of cat',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => true,
+      ],
+      'created' => [
+        'description' => 'The date of record creation',
+        'type' => 'int',
+        'not null' => true,
+        'unsigned' => true,
+        'default' => 0,
+      ],
+      ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'cat_name' => ['cat_name'],
+      'email' => ['email'],
+    ],
+    ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function solych_install() {
+  $schema = solych_schema();
+  $connection = Database::getConnection();
+
+  if (!$connection->schema()->tableExists('solych')) {
+    $connection->schema()->createTable('solych', $schema['solych']);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function solych_uninstall() {
+  $connection = Database::getConnection();
+
+  if ($connection->schema()->tableExists('solych')) {
+    $connection->schema()->dropTable('solych');
+  }
+}
