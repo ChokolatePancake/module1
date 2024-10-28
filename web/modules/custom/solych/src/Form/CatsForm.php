@@ -3,6 +3,7 @@
 namespace Drupal\solych\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\file\Entity\File;
 use Drupal\solych\CatsFormValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormBase;
@@ -113,12 +114,18 @@ class CatsForm extends FormBase {
       '#attributes' => ['id' => 'email-validation-message'],
     ];
 
+    $form['photo_preview'] = [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'photo-preview'],
+    ];
+
     $form['photo'] = [
       '#type' => 'managed_file',
       '#title' => $this->t('Your cat\'s photo:'),
       '#required' => TRUE,
       '#description' => $this->t('Allowed formats: jpeg, jpg or png(max size:2MB)'),
       '#description_display' => 'before',
+      '#upload_location' => 'public://cat_photos/',
       '#validators' => [
         'allowed_extensions' => ['jpg', 'jpeg', 'png'],
         'max_size' => [2 * 1024 * 1024],
@@ -144,6 +151,8 @@ class CatsForm extends FormBase {
     $form['#prefix'] = '<div id="cats-form-messages">';
 
     $form['#suffix'] = '</div>';
+
+    $form['#attached']['library'][] = 'solych/photo_preview';
 
     return $form;
   }
@@ -204,7 +213,7 @@ class CatsForm extends FormBase {
     $is_submit = $triggering_element['#name'];
 
     if ($file_id) {
-      $file = \Drupal\file\Entity\File::load($file_id);
+      $file = File::load($file_id);
 
       $validators = $form['photo']['#validators'];
       $error_message = $this->validator->validatePhoto($file, $validators);

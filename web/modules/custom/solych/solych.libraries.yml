@@ -1,0 +1,8 @@
+photo_preview:
+  version: 1.x
+  js:
+    js/photo_preview.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
