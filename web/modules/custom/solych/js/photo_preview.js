@@ -10,8 +10,7 @@
 
         if (fileInput.files && fileInput.files[0]) {
           const file = fileInput.files[0];
-          console.log(file.size);
-          console.log(file.size>maxFileSize);
+
           if (file.size <= maxFileSize && ['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
             const reader = new FileReader();
 
