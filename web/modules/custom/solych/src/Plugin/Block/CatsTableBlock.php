@@ -19,10 +19,30 @@ use Drupal\Core\Link;
 class CatsTableBlock extends BlockBase {
 
   /**
+   * The limit of records to display.
+   *
+   * @var int|null
+   */
+  protected $limit = NULL;
+
+  /**
+   * Sets the limit for the number of records to display.
+   *
+   * @param int|null $limit
+   *   The maximum number of records to display. NULL for no limit.
+   */
+  public function setLimit($limit = NULL) {
+    $this->limit = $limit;
+  }
+
+  /**
    * {@inheritdoc}
    */
-  public function build()
-  {
+  public function build() {
+
+    \Drupal::logger('cats_table_block')->notice('Table limit value: @limit', [
+      '@limit' => $this->limit === NULL ? 'No limit' : $this->limit,
+    ]);
     $header = [
       ['data' => $this->t('Cat\'s name')],
       ['data' => $this->t('Owner email')],
@@ -31,10 +51,15 @@ class CatsTableBlock extends BlockBase {
     ];
 
     $connection = Database::getConnection();
-    $query = $connection->select('solych', 's')
+    if ($this->limit !== NULL) {
+      $query = $connection->select('solych', 's')
       ->fields('s', ['cat_name', 'email', 'photo', 'created'])
-      ->orderBy('created', 'DESC')
-      ->execute();
+      ->orderBy('created', 'DESC')->range(0, $this->limit)->execute();
+    } else {
+      $query = $connection->select('solych', 's')
+        ->fields('s', ['cat_name', 'email', 'photo', 'created'])
+        ->orderBy('created', 'DESC')->execute();
+    }
 
     $rows = [];
 

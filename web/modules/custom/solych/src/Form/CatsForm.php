@@ -163,6 +163,7 @@ class CatsForm extends FormBase {
     $form['#suffix'] = '</div>';
 
     $table_block = \Drupal::service('plugin.manager.block')->createInstance('cats_table_block', []);
+    $table_block->setLimit(5);
     $form['cats_table'] = $table_block->build();
     $form['cats_table']['#weight'] = 10;
 
@@ -311,6 +312,7 @@ class CatsForm extends FormBase {
     $form['email']['#value'] = '';
     $form['photo']['#value'] = '';
     $table_block = \Drupal::service('plugin.manager.block')->createInstance('cats_table_block', []);
+    $table_block->setLimit(5);
     $form['cats_table'] = $table_block->build();
     return $form;
   }
