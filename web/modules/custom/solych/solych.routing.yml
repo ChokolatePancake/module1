@@ -1,7 +1,14 @@
-solych.cats:
-  path: '/solych/cats'
+solych.cat_add:
+  path: '/solych/cats/add'
   defaults:
-    _controller: '\Drupal\solych\Controller\CatsPageController::content'
-    _title: 'Cats'
+    _controller: '\Drupal\solych\Controller\CatsAddController::content'
+    _title: 'Add cat'
+  requirements:
+    _permission: 'access content'
+solych.cats_list:
+  path: '/solych/cats-list'
+  defaults:
+    _controller: '\Drupal\solych\Controller\CatsListController::content'
+    _title: 'Cats List'
   requirements:
     _permission: 'access content'

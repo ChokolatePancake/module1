@@ -81,6 +81,8 @@ class CatsForm extends FormBase {
    *   The form array with added elements.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $form['#attributes']['autocomplete'] = 'off';
+
     $form['cat_name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Your cat’s name:'),
@@ -91,11 +93,13 @@ class CatsForm extends FormBase {
         'event' => 'change',
         'wrapper' => 'cat-name-validation-message',
       ],
+      '#weight' => -10,
     ];
 
     $form['cat_name_validation_message'] = [
       '#type' => 'container',
       '#attributes' => ['id' => 'cat-name-validation-message'],
+      '#weight' => -9,
     ];
 
     $form['email'] = [
@@ -108,16 +112,19 @@ class CatsForm extends FormBase {
         'wrapper' => 'email-validation-message',
       ],
       '#description' => $this->t('Please enter a valid email(only latin letters, numbers, underscores or hyphens).'),
+      '#weight' => -8,
     ];
 
     $form['email_validation_message'] = [
       '#type' => 'container',
       '#attributes' => ['id' => 'email-validation-message'],
+      '#weight' => -7,
     ];
 
     $form['photo_preview'] = [
       '#type' => 'container',
       '#attributes' => ['id' => 'photo-preview'],
+      '#weight' => -6,
     ];
 
     $form['photo'] = [
@@ -131,11 +138,13 @@ class CatsForm extends FormBase {
         'allowed_extensions' => ['jpg', 'jpeg', 'png'],
         'max_size' => [2 * 1024 * 1024],
       ],
+      '#weight' => -5,
     ];
 
     $form['photo_validation_message'] = [
       '#type' => 'container',
       '#attributes' => ['id' => 'photo-validation-message'],
+      '#weight' => -4,
     ];
 
     $form['actions']['submit'] = [
@@ -152,6 +161,10 @@ class CatsForm extends FormBase {
     $form['#prefix'] = '<div id="cats-form-messages">';
 
     $form['#suffix'] = '</div>';
+
+    $table_block = \Drupal::service('plugin.manager.block')->createInstance('cats_table_block', []);
+    $form['cats_table'] = $table_block->build();
+    $form['cats_table']['#weight'] = 10;
 
     $form['#attached']['library'][] = 'solych/photo_preview';
 
@@ -291,10 +304,14 @@ class CatsForm extends FormBase {
       ])
       ->execute();
 
+    $form_state->setValues([]);
+    $form_state->setUserInput([]);
     $form_state->setRebuild(TRUE);
     $form['cat_name']['#value'] = '';
     $form['email']['#value'] = '';
     $form['photo']['#value'] = '';
+    $table_block = \Drupal::service('plugin.manager.block')->createInstance('cats_table_block', []);
+    $form['cats_table'] = $table_block->build();
     return $form;
   }
 

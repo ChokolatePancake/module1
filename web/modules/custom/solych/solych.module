@@ -12,9 +12,20 @@ function solych_theme($existing, $type, $theme, $path) {
         'markup' => NULL,
         'title' => NULL,
         'cats_form' => NULL,
+        'cats_table' => NULL,
+        'list_button' => NULL,
       ],
       'template' => 'cats-page',
       'path' => $template_path,
-    ]
+    ],
+    'cats_list_page' => [
+      'variables' => [
+        'title' => NULL,
+        'form_button' => NULL,
+        'table' => NULL,
+      ],
+      'template' => 'cats-list-page',
+      'path' => $template_path,
+    ],
   ];
 }
