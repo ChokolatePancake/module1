@@ -3,6 +3,7 @@
 namespace Drupal\solych\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Database\Database;
 use Drupal\file\Entity\File;
 use Drupal\solych\CatsFormValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -266,6 +267,29 @@ class CatsForm extends FormBase {
     $cat_name = $form_state->getValue('cat_name');
 
     $this->messenger->addMessage($this->t('We are glad to see your cat @cat_name!', ['@cat_name' => $cat_name]));
+
+    $email = $form_state->getValue('email');
+    $created = time();
+    $file_id = $form_state->getValue('photo')[0];
+
+    if ($file_id) {
+      $file = File::load($file_id);
+      if ($file) {
+        $file->setPermanent();
+        $file->save();
+      }
+    }
+
+    $connection = Database::getConnection();
+
+    $connection->insert('solych')
+      ->fields([
+        'cat_name' => $cat_name,
+        'email' => $email,
+        'photo' => $file_id,
+        'created' => $created,
+      ])
+      ->execute();
 
     $form_state->setRebuild(TRUE);
     $form['cat_name']['#value'] = '';
