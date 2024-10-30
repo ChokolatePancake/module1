@@ -27,5 +27,12 @@ function solych_theme($existing, $type, $theme, $path) {
       'template' => 'cats-list-page',
       'path' => $template_path,
     ],
+    'cats_table' => [
+      'variables' => [
+        'cats' => [],
+      ],
+      'template' => 'cats-table',
+      'path' => $template_path,
+    ]
   ];
 }

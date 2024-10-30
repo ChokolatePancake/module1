@@ -1,0 +1,33 @@
+{{ attach_library('solych/photo_modal') }}
+
+<table class="cats-table">
+  <thead>
+    <tr>
+      <th>{{ 'Cat\'s name'|t }}</th>
+      <th>{{ 'Owner Email'|t }}</th>
+      <th class="cats-table__photo-head">{{  'Photo'|t }}</th>
+      <th>{{ 'Added Date'|t }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cat in cats %}
+      <tr>
+        <td>{{ cat.cat_name }}</td>
+        <td>{{ cat.email }}</td>
+        <td>
+          <div class="cats-table__photo-container">
+            <img src="{{ cat.photo }}" alt="{{ cat.data.cat_name }}" class="cat-table__photo" onclick="openModal('{{ cat.photo }}')">
+          </div>
+        </td>
+        <td>{{ cat.created_date }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="photo-modal-wrapper">
+  <div class="photo-modal">
+    <button class="photo-modal__close" onclick="closeModal()" aria-label="{{ 'Close'|t }}">&times;</button>
+    <img id="fullImage">
+  </div>
+</div>

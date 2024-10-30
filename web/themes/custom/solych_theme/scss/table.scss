@@ -1,0 +1,13 @@
+.cats-table {
+  &__photo-head {
+    text-align: center;
+  }
+  &__photo-container {
+    height: 150px;
+    text-align: center;
+    img {
+      max-height: 100%;
+      width: auto;
+    }
+  }
+}

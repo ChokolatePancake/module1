@@ -1,0 +1,46 @@
+.photo-modal-wrapper {
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba($black, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.photo-modal {
+  position: relative;
+  margin-top: 70px;
+  width: auto;
+  height: auto;
+
+  &__close {
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    font-size: 30px;
+    color: $white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    &:hover {
+      color: $blue;
+    }
+  }
+}
+
+#fullImage {
+  max-width: calc(100vw - 120px);
+  max-height: calc(100vh - 120px);
+}

@@ -39,17 +39,6 @@ class CatsTableBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-
-    \Drupal::logger('cats_table_block')->notice('Table limit value: @limit', [
-      '@limit' => $this->limit === NULL ? 'No limit' : $this->limit,
-    ]);
-    $header = [
-      ['data' => $this->t('Cat\'s name')],
-      ['data' => $this->t('Owner email')],
-      ['data' => $this->t('Photo')],
-      ['data' => $this->t('Added date')]
-    ];
-
     $connection = Database::getConnection();
     if ($this->limit !== NULL) {
       $query = $connection->select('solych', 's')
@@ -61,7 +50,7 @@ class CatsTableBlock extends BlockBase {
         ->orderBy('created', 'DESC')->execute();
     }
 
-    $rows = [];
+    $cats = [];
 
     foreach ($query as $record) {
       $photo_link = '';
@@ -69,34 +58,26 @@ class CatsTableBlock extends BlockBase {
       if ($record->photo) {
         $file = File::load($record->photo);
 
-        if ($file) {
-          $photo_link = [
-            '#theme' => 'image',
-            '#uri' => $file->getFileUri(),
-            '#alt' => $this->t('Photo of @cat_name', ['@cat_name' => $record->cat_name]),
-            '#width' => 100,
-            '#height' => 100,
-          ];
-        }
+        $photo_link = $file ? \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri()) : '';
       }
 
-      $created_date = date('Y-m-d H:i', $record->created);
+      $created_date = \Drupal::service('date.formatter')->format($record->created, 'custom', 'd-m-Y H:i:s');
 
-      $rows[] = [
-        'data' => [
-          $record->cat_name,
-          $record->email,
-          ['data' => $photo_link, 'align' => 'center'],
-          $created_date
-        ],
+      $cats[] = [
+        'cat_name' => $record->cat_name,
+        'email' => $record->email,
+        'photo' => $photo_link,
+        'created_date' => $created_date
       ];
     }
-
     return [
-      '#type' => 'table',
-      '#header' => $header,
-      '#rows' => $rows,
-      '#empty' => $this->t('No records found.'),
+      '#theme' => 'cats_table',
+      '#cats' => $cats,
+      '#attached' => [
+        'library' => [
+          'solych/modal',
+        ],
+      ],
     ];
   }
 
