@@ -2,7 +2,10 @@
 
 namespace Drupal\solych\Form;
 
+use Drupal\Component\Utility\EmailValidatorInterface;
 use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Block\BlockManagerInterface;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Database;
 use Drupal\file\Entity\File;
 use Drupal\solych\CatsFormValidator;
@@ -42,15 +45,48 @@ class CatsForm extends FormBase {
   protected $response;
 
   /**
-   * Constructor the CatsForm class.
+   * The block manager service.
+   *
+   * @var \Drupal\Core\Block\BlockManagerInterface
+   */
+  protected $blockManager;
+
+  /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
+   * The email validator service.
+   *
+   * @var \Drupal\Component\Utility\EmailValidatorInterface
+   */
+  protected $emailValidator;
+
+  /**
+   * Constructs the CatsForm.
    *
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   The messenger service displays messages after submit
+   *   The messenger service.
+   * @param \Drupal\Core\Block\BlockManagerInterface $block_manager
+   *   The block manager service.
+   * @param \Drupal\Component\Utility\EmailValidatorInterface $email_validator
+   *   The file URL generator service.
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
    */
-  public function __construct(MessengerInterface $messenger) {
+  public function __construct(MessengerInterface $messenger,
+                              BlockManagerInterface $block_manager,
+                              EmailValidatorInterface $email_validator,
+                              Connection $database) {
     $this->messenger = $messenger;
     $this->validator = new CatsFormValidator();
     $this->response = new AjaxResponse();
+    $this->blockManager = $block_manager;
+    $this->emailValidator = $email_validator;
+    $this->database = $database;
   }
 
   /**
@@ -59,6 +95,9 @@ class CatsForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('messenger'),
+      $container->get('plugin.manager.block'),
+      $container->get('email.validator'),
+      $container->get('database')
     );
   }
 
@@ -67,6 +106,12 @@ class CatsForm extends FormBase {
    */
   public function getFormId() {
     return 'solych_cats_form';
+  }
+
+  protected function loadCatTableBlock($limit) {
+    $table_block = $this->blockManager->createInstance('cats_table_block', []);
+    $table_block->setLimit($limit);
+    return $table_block->build();
   }
 
   /**
@@ -87,7 +132,9 @@ class CatsForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Your cat’s name:'),
       '#required' => TRUE,
-      '#description' => $this->t('Minimal length of name:2 characters. Maximal length of name:32 characters.'),
+      '#description' => $this->t(
+        'Minimal length of name:2 characters. Maximal length of name:32 characters.'
+      ),
       '#ajax' => [
         'callback' => '::validateCatNameAjax',
         'event' => 'change',
@@ -111,7 +158,9 @@ class CatsForm extends FormBase {
         'event' => 'change',
         'wrapper' => 'email-validation-message',
       ],
-      '#description' => $this->t('Please enter a valid email(only latin letters, numbers, underscores or hyphens).'),
+      '#description' => $this->t(
+        'Please enter a valid email(only latin letters, numbers, underscores or hyphens).'
+      ),
       '#weight' => -8,
     ];
 
@@ -162,9 +211,7 @@ class CatsForm extends FormBase {
 
     $form['#suffix'] = '</div>';
 
-    $table_block = \Drupal::service('plugin.manager.block')->createInstance('cats_table_block', []);
-    $table_block->setLimit(5);
-    $form['cats_table'] = $table_block->build();
+    $form['cats_table'] = $this->loadCatTableBlock(5);
     $form['cats_table']['#weight'] = 10;
 
     $form['#attached']['library'][] = 'solych/photo_preview';
@@ -187,7 +234,7 @@ class CatsForm extends FormBase {
     $form_state->clearErrors();
 
     $email = $form_state->getValue('email');
-    $is_valid = \Drupal::service('email.validator')->isValid($email);
+    $is_valid = $this->emailValidator->isValid($email);
     $error_message = $is_valid ? '' : $this->t('The email address is not valid.');
 
     return $this->validator->handleValidationAjax('#email-validation-message', $error_message);
@@ -280,7 +327,9 @@ class CatsForm extends FormBase {
 
     $cat_name = $form_state->getValue('cat_name');
 
-    $this->messenger->addMessage($this->t('We are glad to see your cat @cat_name!', ['@cat_name' => $cat_name]));
+    $this->messenger->addMessage(
+      $this->t('We are glad to see your cat @cat_name!',
+        ['@cat_name' => $cat_name]));
 
     $email = $form_state->getValue('email');
     $created = time();
@@ -294,9 +343,7 @@ class CatsForm extends FormBase {
       }
     }
 
-    $connection = Database::getConnection();
-
-    $connection->insert('solych')
+    $this->database->insert('solych')
       ->fields([
         'cat_name' => $cat_name,
         'email' => $email,
@@ -311,9 +358,7 @@ class CatsForm extends FormBase {
     $form['cat_name']['#value'] = '';
     $form['email']['#value'] = '';
     $form['photo']['#value'] = '';
-    $table_block = \Drupal::service('plugin.manager.block')->createInstance('cats_table_block', []);
-    $table_block->setLimit(5);
-    $form['cats_table'] = $table_block->build();
+    $form['cats_table'] = $this->loadCatTableBlock(5);
     return $form;
   }
 

@@ -1,0 +1,8 @@
+uuid: f89c2ef9-3b10-4e87-a565-64ef71bf939c
+langcode: und
+status: true
+dependencies: {  }
+id: solych_long_date
+label: 'Solych long date'
+locked: false
+pattern: 'd-m-Y H:m:s'

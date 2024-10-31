@@ -14,7 +14,7 @@ use Drupal\Core\Url;
 class CatsAddController extends ControllerBase {
 
   /**
-   * Returns the content for the Cats page, including a form, table of cats and button to page cats list.
+   * Returns the content for the Cats add page.
    *
    * @return array
    *   A render array containing the title, markup, and form.
