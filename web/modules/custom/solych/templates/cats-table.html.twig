@@ -7,6 +7,10 @@
       <th>{{ 'Owner Email'|t }}</th>
       <th class="cats-table__photo-head">{{  'Photo'|t }}</th>
       <th>{{ 'Added Date'|t }}</th>
+      {% if cats[0].buttons is defined %}
+        <th>{{ 'Edit'|t }}</th>
+        <th>{{ 'Delete'|t }}</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -20,6 +24,10 @@
           </div>
         </td>
         <td>{{ cat.created_date }}</td>
+        {% if cat.buttons is defined %}
+        <td><a href="{{ cat.buttons.edit.url }}" class="{{ cat.buttons.edit.attributes.class|join(' ') }}">{{ cat.buttons.edit.title }}</a></td>
+        <td><a href="{{ cat.buttons.delete.url }}" class="{{ cat.buttons.delete.attributes.class|join(' ') }}">{{ cat.buttons.delete.title }}</a></td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

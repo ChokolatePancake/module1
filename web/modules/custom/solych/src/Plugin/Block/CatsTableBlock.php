@@ -7,6 +7,8 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\File\FileUrlGenerator;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -48,6 +50,12 @@ class CatsTableBlock extends BlockBase implements ContainerFactoryPluginInterfac
    */
   protected $dateFormatter;
 
+  /**
+   * The current user service.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected AccountProxyInterface $currentUser;
 
   /**
    * Constructs a new CatsTableBlock instance.
@@ -64,15 +72,19 @@ class CatsTableBlock extends BlockBase implements ContainerFactoryPluginInterfac
    *   The file URL generator.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter service.
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *    The current user service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition,
                               Connection $database,
                               FileUrlGenerator $file_url_generator,
-                              DateFormatterInterface $date_formatter) {
+                              DateFormatterInterface $date_formatter,
+                              AccountProxyInterface $current_user) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->database = $database;
     $this->fileUrlGenerator = $file_url_generator;
     $this->dateFormatter = $date_formatter;
+    $this->currentUser = $current_user;
   }
 
   /**
@@ -85,7 +97,8 @@ class CatsTableBlock extends BlockBase implements ContainerFactoryPluginInterfac
       $plugin_definition,
       $container->get('database'),
       $container->get('file_url_generator'),
-      $container->get('date.formatter')
+      $container->get('date.formatter'),
+      $container->get('current_user')
     );
   }
 
@@ -103,8 +116,9 @@ class CatsTableBlock extends BlockBase implements ContainerFactoryPluginInterfac
    * {@inheritdoc}
    */
   public function build() {
+    $has_permissions = $this->currentUser->hasPermission('administer all categories');
     $query = $this->database->select('solych', 's')
-      ->fields('s', ['cat_name', 'email', 'photo', 'created'])
+      ->fields('s', ['id', 'cat_name', 'email', 'photo', 'created'])
       ->orderBy('created', 'DESC');
     if ($this->limit !== NULL) {
       $query->range(0, $this->limit);
@@ -124,13 +138,31 @@ class CatsTableBlock extends BlockBase implements ContainerFactoryPluginInterfac
       }
 
       $created_date = $this->dateFormatter->format($record->created, 'solych_long_date');
-      $cats[] = [
+      $record_data = [
         'cat_name' => $record->cat_name,
         'email' => $record->email,
         'photo' => $photo_link,
-        'created_date' => $created_date
+        'created_date' => $created_date,
       ];
+
+      if ($has_permissions) {
+        $record_data['buttons'] = [
+          'edit' => [
+            '#type' => 'link',
+            'title' => $this->t('Edit'),
+            '#attributes' => ['class' => ['button', 'button--small']],
+          ],
+          'delete' => [
+            '#type' => 'link',
+            'title' => $this->t('Delete'),
+            '#attributes' => ['class' => ['button', 'button--danger', 'button--small']],
+          ],
+        ];
+      }
+
+      $cats[] = $record_data;
     }
+
     return [
       '#theme' => 'cats_table',
       '#cats' => $cats,
