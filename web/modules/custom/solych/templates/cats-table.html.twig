@@ -26,7 +26,7 @@
         <td>{{ cat.created_date }}</td>
         {% if cat.buttons is defined %}
         <td><a href="{{ cat.buttons.edit.url }}" class="{{ cat.buttons.edit.attributes.class|join(' ') }}">{{ cat.buttons.edit.title }}</a></td>
-        <td><a href="{{ cat.buttons.delete.url }}" class="{{ cat.buttons.delete.attributes.class|join(' ') }}">{{ cat.buttons.delete.title }}</a></td>
+          <td>{{ cat.buttons.delete|render }}</td>
         {% endif %}
       </tr>
     {% endfor %}

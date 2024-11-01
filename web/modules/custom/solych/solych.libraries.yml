@@ -12,3 +12,9 @@ photo_modal:
     js/photo_modal.js: {}
   dependencies:
     - core/drupal
+delete_confirmation:
+  js:
+    js/delete_confirmation.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal.dialog.ajax

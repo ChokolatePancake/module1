@@ -1,7 +1,7 @@
 solych.cat_add:
   path: '/solych/cats/add'
   defaults:
-    _controller: '\Drupal\solych\Controller\CatsAddController::content'
+    _controller: '\Drupal\solych\Controller\CatsController::content'
     _title: 'Add cat'
   requirements:
     _permission: 'access content'
@@ -12,3 +12,22 @@ solych.cats_list:
     _title: 'Cats List'
   requirements:
     _permission: 'access content'
+solych.cat_delete:
+  path: '/admin/solych/delete/{id}'
+  defaults:
+    _controller: '\Drupal\solych\Controller\CatsController::delete'
+    _title: 'Delete Cat'
+  requirements:
+    _permission: 'administer all categories'
+  options:
+    _admin_route: TRUE
+
+solych.cat_delete_confirm:
+  path: '/admin/solych/delete/confirm/{id}'
+  defaults:
+    _controller: '\Drupal\solych\Controller\CatsController::deleteConfirm'
+    _title: 'Confirm Delete Cat'
+  requirements:
+    _permission: 'administer all categories'
+  options:
+    _admin_route: TRUE

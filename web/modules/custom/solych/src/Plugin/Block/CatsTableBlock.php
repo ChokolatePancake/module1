@@ -154,8 +154,13 @@ class CatsTableBlock extends BlockBase implements ContainerFactoryPluginInterfac
           ],
           'delete' => [
             '#type' => 'link',
-            'title' => $this->t('Delete'),
-            '#attributes' => ['class' => ['button', 'button--danger', 'button--small']],
+            '#title' => $this->t('Delete'),
+            '#url' => Url::fromRoute('solych.cat_delete', ['id' => $record->id]),
+            '#attributes' => [
+              'class' => ['button', 'button--danger', 'button--small', 'use-ajax'],
+              'data-dialog-type' => 'modal',
+              'data-dialog-options' => json_encode(['width' => 300]),
+              ],
           ],
         ];
       }
@@ -168,7 +173,13 @@ class CatsTableBlock extends BlockBase implements ContainerFactoryPluginInterfac
       '#cats' => $cats,
       '#attached' => [
         'library' => [
-          'solych/modal',
+          'core/drupal.dialog.ajax',
+          'solych/delete_confirmation',
+        ],
+        'drupalSettings' => [
+          'solych' => [
+            'deleteConfirmUrl' => Url::fromRoute('solych.cat_delete_confirm', ['id' => $record->id])->toString(),
+          ],
         ],
       ],
     ];
