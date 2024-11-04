@@ -4,9 +4,11 @@ namespace Drupal\solych\Controller;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\OpenModalDialogCommand;
+use Drupal\Core\Cache\CacheTagsInvalidator;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Render\Markup;
+use Drupal\solych\Form\CatsEditForm;
 use Drupal\solych\Form\CatsForm;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -18,7 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
  * This controller generates the Cats page, which includes a title,
  * descriptive text, and a form for submitting cat and owner information.
  */
-class CatsController extends ControllerBase {
+class CatsController extends ControllerBase
+{
 
 
   /**
@@ -28,22 +31,34 @@ class CatsController extends ControllerBase {
    */
   protected $database;
 
+  /**
+   * The cache invalidator service.
+   *
+   * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
+   */
+  protected $cacheInvalidator;
 
   /**
    * Constructs the CatsForm.
    * @param \Drupal\Core\Database\Connection $database
    *   The database connection.
+   * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_invalidator
+   *    The cache tags invalidator service.
    */
-  public function __construct(Connection $database) {
+  public function __construct(Connection $database, CacheTagsInvalidator $cache_invalidator)
+  {
     $this->database = $database;
+    $this->cacheInvalidator = $cache_invalidator;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container)
+  {
     return new static(
-      $container->get('database')
+      $container->get('database'),
+      $container->get('cache_tags.invalidator'),
     );
   }
 
@@ -53,7 +68,8 @@ class CatsController extends ControllerBase {
    * @return array
    *   A render array containing the title, markup, and form.
    */
-  public function content() {
+  public function content()
+  {
     $form = $this->formBuilder()->getForm(CatsForm::class);
 
     $list_button = [
@@ -82,7 +98,8 @@ class CatsController extends ControllerBase {
    * @return \Drupal\Core\Ajax\AjaxResponse
    *   A response with modal dialog commands.
    */
-  public function delete($id) {
+  public function delete($id)
+  {
     $response = new AjaxResponse();
 
     $modal_content = [
@@ -103,7 +120,7 @@ class CatsController extends ControllerBase {
           ],
         ],
       ],
-      ];
+    ];
 
     $response->addCommand(new OpenModalDialogCommand(
       $this->t('Delete Confirmation'),
@@ -121,12 +138,13 @@ class CatsController extends ControllerBase {
    * Confirms the deletion of a cat record.
    *
    * @param Symfony\Component\HttpFoundation\Request $request
-   *   The ID of the cat to delete.
+   *   The request with ID of the cat to delete.
    *
    * @return \Drupal\Core\Ajax\AjaxResponse
    *   A response to redirect or update after deletion.
    */
-  public function deleteConfirm(Request $request) {
+  public function deleteConfirm(Request $request)
+  {
     parse_str($request->getContent(), $data);
 
     $id = isset($data['id']) ? $data['id'] : NULL;
@@ -139,8 +157,36 @@ class CatsController extends ControllerBase {
     }
     $response = new AjaxResponse();
     $response->addCommand(new CloseModalDialogCommand());
+    $this->cacheInvalidator->invalidateTags(['solych_cat_list']);
 
     return $response;
   }
 
+  /**
+   * Provides an edit confirmation modal dialog.
+   *
+   * @param int $id
+   *   The ID of the cat record to edit.
+   *
+   * @return \Drupal\Core\Ajax\AjaxResponse
+   *   A response with modal dialog commands.
+   */
+  public function edit($id, Request $request) {
+    $response = new AjaxResponse();
+    $referer = $request->headers->get('referer');
+    $form = $this->formBuilder()->getForm(CatsEditForm::class, $id, $referer);
+
+    $response->addCommand(new OpenModalDialogCommand(
+      $this->t('Edit'),
+      $form,
+      [
+        'width' => '500',
+        'dialogClass' => 'edit-cat-modal',
+        'modal' => TRUE,
+      ]
+    ));
+    $this->cacheInvalidator->invalidateTags(['solych_cat_list']);
+
+    return $response;
+  }
 }

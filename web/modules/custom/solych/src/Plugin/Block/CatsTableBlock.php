@@ -149,8 +149,13 @@ class CatsTableBlock extends BlockBase implements ContainerFactoryPluginInterfac
         $record_data['buttons'] = [
           'edit' => [
             '#type' => 'link',
-            'title' => $this->t('Edit'),
-            '#attributes' => ['class' => ['button', 'button--small']],
+            '#title' => $this->t('Edit'),
+            '#url' => Url::fromRoute('solych.cat_edit', ['id' => $record->id]),
+            '#attributes' => [
+              'class' => ['button', 'button--small', 'use-ajax'],
+              'data-dialog-type' => 'modal',
+              'data-dialog-options' => json_encode(['width' => 500]),
+            ],
           ],
           'delete' => [
             '#type' => 'link',
@@ -181,6 +186,9 @@ class CatsTableBlock extends BlockBase implements ContainerFactoryPluginInterfac
             'deleteConfirmUrl' => Url::fromRoute('solych.cat_delete_confirm', ['id' => $record->id])->toString(),
           ],
         ],
+      ],
+      '#cache' => [
+        'tags' => ['solych_cat_list'],
       ],
     ];
   }

@@ -5,8 +5,8 @@ namespace Drupal\solych\Form;
 use Drupal\Component\Utility\EmailValidatorInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Block\BlockManagerInterface;
+use Drupal\Core\Cache\CacheTagsInvalidator;
 use Drupal\Core\Database\Connection;
-use Drupal\Core\Database\Database;
 use Drupal\file\Entity\File;
 use Drupal\solych\CatsFormValidator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -65,6 +65,14 @@ class CatsForm extends FormBase {
    */
   protected $emailValidator;
 
+
+  /**
+   * The cache invalidator service.
+   *
+   * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
+   */
+  protected $cacheInvalidator;
+
   /**
    * Constructs the CatsForm.
    *
@@ -80,13 +88,15 @@ class CatsForm extends FormBase {
   public function __construct(MessengerInterface $messenger,
                               BlockManagerInterface $block_manager,
                               EmailValidatorInterface $email_validator,
-                              Connection $database) {
+                              Connection $database,
+                              CacheTagsInvalidator $cache_invalidator) {
     $this->messenger = $messenger;
     $this->validator = new CatsFormValidator();
     $this->response = new AjaxResponse();
     $this->blockManager = $block_manager;
     $this->emailValidator = $email_validator;
     $this->database = $database;
+    $this->cacheInvalidator = $cache_invalidator;
   }
 
   /**
@@ -97,7 +107,8 @@ class CatsForm extends FormBase {
       $container->get('messenger'),
       $container->get('plugin.manager.block'),
       $container->get('email.validator'),
-      $container->get('database')
+      $container->get('database'),
+      $container->get('cache_tags.invalidator'),
     );
   }
 
@@ -127,6 +138,10 @@ class CatsForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes']['autocomplete'] = 'off';
+
+    $form['#cache'] = [
+      'tags' => ['cats_form_data'],
+    ];
 
     $form['cat_name'] = [
       '#type' => 'textfield',
@@ -237,7 +252,7 @@ class CatsForm extends FormBase {
     $is_valid = $this->emailValidator->isValid($email);
     $error_message = $is_valid ? '' : $this->t('The email address is not valid.');
 
-    return $this->validator->handleValidationAjax('#email-validation-message', $error_message);
+    return $this->validator->handleValidationAjax("#{$form['email']['#ajax']['wrapper']}", $error_message);
   }
 
   /**
@@ -254,8 +269,7 @@ class CatsForm extends FormBase {
   public function validateCatNameAjax(array &$form, FormStateInterface $form_state) {
     $cat_name = $form_state->getValue('cat_name');
     $error_message = $this->validator->validateCatName($cat_name, $form_state);
-
-    return $this->validator->handleValidationAjax('#cat-name-validation-message', $error_message);
+    return $this->validator->handleValidationAjax("#{$form['cat_name']['#ajax']['wrapper']}", $error_message);
   }
 
   /**
@@ -355,9 +369,13 @@ class CatsForm extends FormBase {
     $form_state->setValues([]);
     $form_state->setUserInput([]);
     $form_state->setRebuild(TRUE);
+    $form_state->setValue('cat_name', NULL);
+    $form_state->setValue('email', NULL);
+    $form_state->setValue('photo', NULL);
     $form['cat_name']['#value'] = '';
     $form['email']['#value'] = '';
     $form['photo']['#value'] = '';
+    $this->cacheInvalidator->invalidateTags(['cats_form_data']);
     $form['cats_table'] = $this->loadCatTableBlock(5);
     return $form;
   }
