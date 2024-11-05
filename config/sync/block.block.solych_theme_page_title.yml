@@ -1,4 +1,4 @@
-uuid: 663d4575-a580-4fdd-ad9a-18fb4b2186b2
+uuid: 4862e69d-c9ad-483a-9e2a-7dee2f93077c
 langcode: en
 status: true
 dependencies:
@@ -9,7 +9,7 @@ _core:
 id: solych_theme_page_title
 theme: solych_theme
 region: header
-weight: -7
+weight: -5
 provider: null
 plugin: page_title_block
 settings:

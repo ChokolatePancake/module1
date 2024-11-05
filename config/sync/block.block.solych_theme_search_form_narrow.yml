@@ -1,4 +1,4 @@
-uuid: 4657d014-261a-45e6-9337-40a19795721b
+uuid: 07a0ad41-be87-44ed-8877-de39b38b625c
 langcode: en
 status: true
 dependencies:
@@ -11,7 +11,7 @@ _core:
 id: solych_theme_search_form_narrow
 theme: solych_theme
 region: primary_menu
-weight: -7
+weight: -4
 provider: null
 plugin: search_form_block
 settings:

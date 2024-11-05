@@ -1,4 +1,4 @@
-uuid: 3cb9b31a-c37c-4858-97b0-a16e002bcafb
+uuid: ea137b94-1db7-4833-8ebd-8d01bea78eeb
 langcode: en
 status: true
 dependencies:
@@ -11,7 +11,7 @@ _core:
 id: solych_theme_powered
 theme: solych_theme
 region: header
-weight: 2
+weight: 0
 provider: null
 plugin: system_powered_by_block
 settings:

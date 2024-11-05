@@ -41,8 +41,8 @@ class CatsEditForm extends CatsForm {
                               $block_manager,
                               $email_validator,
                               Connection $database,
-                              FileUrlGenerator $file_url_generator, $cache_invalidator) {
-    parent::__construct($messenger, $block_manager, $email_validator, $database, $cache_invalidator);
+                              FileUrlGenerator $file_url_generator) {
+    parent::__construct($messenger, $block_manager, $email_validator, $database);
     $this->fileUrlGenerator = $file_url_generator;
   }
 
@@ -56,7 +56,6 @@ class CatsEditForm extends CatsForm {
       $container->get('email.validator'),
       $container->get('database'),
       $container->get('file_url_generator'),
-      $container->get('cache_tags.invalidator'),
     );
   }
 
@@ -86,8 +85,7 @@ class CatsEditForm extends CatsForm {
     $this->catId = $cat_id;
     $form = parent::buildForm($form, $form_state);
 
-    unset($form['cats_table']);
-
+    unset($form['table_wrapper']);
     $form['id'] = [
       '#type' => 'hidden',
       '#value' => $cat_id,
@@ -138,6 +136,7 @@ class CatsEditForm extends CatsForm {
 
     $form['#prefix'] = '<div id="edit-form-messages-wrapper">';
     $form['#suffix'] = '</div>';
+    $form_state->setRebuild(TRUE);
     return $form;
   }
 

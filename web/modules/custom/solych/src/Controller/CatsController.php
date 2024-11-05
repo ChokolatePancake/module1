@@ -20,8 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
  * This controller generates the Cats page, which includes a title,
  * descriptive text, and a form for submitting cat and owner information.
  */
-class CatsController extends ControllerBase
-{
+class CatsController extends ControllerBase {
 
 
   /**

@@ -1,4 +1,4 @@
-uuid: d6d650dd-ad1f-4727-8255-7103de5a96d7
+uuid: bad0d7da-aaa3-45e5-bf02-ff0cb6736591
 langcode: en
 status: true
 dependencies:
@@ -9,7 +9,7 @@ _core:
 id: solych_theme_primary_local_tasks
 theme: solych_theme
 region: header
-weight: -3
+weight: -4
 provider: null
 plugin: local_tasks_block
 settings:

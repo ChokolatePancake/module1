@@ -1,4 +1,4 @@
-uuid: 2de57d4f-a5bd-4c4d-9bed-c31e5a84ae0e
+uuid: d1d40e13-b454-465e-9ae3-67ad2040b126
 langcode: en
 status: true
 dependencies:
@@ -9,13 +9,13 @@ dependencies:
 id: solych_theme_languageswitcher
 theme: solych_theme
 region: header
-weight: 5
+weight: 0
 provider: null
 plugin: 'language_block:language_interface'
 settings:
   id: 'language_block:language_interface'
   label: 'Language switcher'
-  label_display: '0'
+  label_display: visible
   provider: language
 visibility:
   language:

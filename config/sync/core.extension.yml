@@ -53,7 +53,7 @@ module:
   standard: 1000
 theme:
   claro: 0
-  solych_theme: 0
-  gin: 0
   olivero: 0
+  gin: 0
+  solych_theme: 0
 profile: standard

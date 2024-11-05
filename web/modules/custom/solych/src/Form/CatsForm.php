@@ -65,14 +65,6 @@ class CatsForm extends FormBase {
    */
   protected $emailValidator;
 
-
-  /**
-   * The cache invalidator service.
-   *
-   * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
-   */
-  protected $cacheInvalidator;
-
   /**
    * Constructs the CatsForm.
    *
@@ -88,15 +80,13 @@ class CatsForm extends FormBase {
   public function __construct(MessengerInterface $messenger,
                               BlockManagerInterface $block_manager,
                               EmailValidatorInterface $email_validator,
-                              Connection $database,
-                              CacheTagsInvalidator $cache_invalidator) {
+                              Connection $database) {
     $this->messenger = $messenger;
     $this->validator = new CatsFormValidator();
     $this->response = new AjaxResponse();
     $this->blockManager = $block_manager;
     $this->emailValidator = $email_validator;
     $this->database = $database;
-    $this->cacheInvalidator = $cache_invalidator;
   }
 
   /**
@@ -108,7 +98,6 @@ class CatsForm extends FormBase {
       $container->get('plugin.manager.block'),
       $container->get('email.validator'),
       $container->get('database'),
-      $container->get('cache_tags.invalidator'),
     );
   }
 
@@ -147,9 +136,7 @@ class CatsForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Your cat’s name:'),
       '#required' => TRUE,
-      '#description' => $this->t(
-        'Minimal length of name:2 characters. Maximal length of name:32 characters.'
-      ),
+      '#description' => $this->t('Minimal length of name:2 characters. Maximal length of name:32 characters.'),
       '#ajax' => [
         'callback' => '::validateCatNameAjax',
         'event' => 'change',
@@ -190,7 +177,6 @@ class CatsForm extends FormBase {
       '#attributes' => ['id' => 'photo-preview'],
       '#weight' => -6,
     ];
-
     $form['photo'] = [
       '#type' => 'managed_file',
       '#title' => $this->t('Your cat\'s photo:'),
@@ -214,20 +200,24 @@ class CatsForm extends FormBase {
     $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Submit'),
+      '#weight' => -3,
       '#ajax' => [
         'callback' => '::ajaxSubmit',
         'wrapper' => 'cats-form-messages',
         'effect' => 'fade',
       ],
-      '#attributes' => ['class' => ['submit-cats-form']]
+      '#attributes' => ['class' => ['submit-cats-form']],
     ];
 
     $form['#prefix'] = '<div id="cats-form-messages">';
 
     $form['#suffix'] = '</div>';
 
-    $form['cats_table'] = $this->loadCatTableBlock(5);
-    $form['cats_table']['#weight'] = 10;
+    $form['table_wrapper'] = [
+      '#type' => 'container',
+      '#weight' => 10,
+      'cats_table' => $this->loadCatTableBlock(5),
+    ];
 
     $form['#attached']['library'][] = 'solych/photo_preview';
 
@@ -375,8 +365,7 @@ class CatsForm extends FormBase {
     $form['cat_name']['#value'] = '';
     $form['email']['#value'] = '';
     $form['photo']['#value'] = '';
-    $this->cacheInvalidator->invalidateTags(['cats_form_data']);
-    $form['cats_table'] = $this->loadCatTableBlock(5);
+    $form['table_wrapper']['cats_table'] = $this->loadCatTableBlock(5);
     return $form;
   }
 

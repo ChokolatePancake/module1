@@ -1,4 +1,4 @@
-uuid: 16fd1e30-e5e4-40e1-9d6a-8b28668511f0
+uuid: 2416b321-414a-43d6-b6ea-3832b5270437
 langcode: en
 status: true
 dependencies:
@@ -11,7 +11,7 @@ _core:
 id: solych_theme_syndicate
 theme: solych_theme
 region: header
-weight: 3
+weight: 0
 provider: null
 plugin: node_syndicate_block
 settings:

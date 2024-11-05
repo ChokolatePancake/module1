@@ -1,4 +1,4 @@
-uuid: 066df5c4-e37e-4065-b858-f95092ddf2da
+uuid: 41d4f045-19db-4b3f-9feb-6b452095984e
 langcode: en
 status: true
 dependencies:
@@ -13,7 +13,7 @@ _core:
 id: solych_theme_account_menu
 theme: solych_theme
 region: header
-weight: -2
+weight: -4
 provider: null
 plugin: 'system_menu_block:account'
 settings:

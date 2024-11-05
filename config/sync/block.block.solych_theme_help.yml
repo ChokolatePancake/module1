@@ -1,4 +1,4 @@
-uuid: 5b5acb85-5a84-461b-83a2-90a522dd2668
+uuid: 459348a0-adcb-48f7-acfd-bd50a9011a5d
 langcode: en
 status: true
 dependencies:
@@ -11,7 +11,7 @@ _core:
 id: solych_theme_help
 theme: solych_theme
 region: header
-weight: 1
+weight: 0
 provider: null
 plugin: help_block
 settings:

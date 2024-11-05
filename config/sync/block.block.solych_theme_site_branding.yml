@@ -1,4 +1,4 @@
-uuid: 716223d2-074a-4552-980f-92d38f919c71
+uuid: 642735cc-97b1-4cdc-8c5f-453949dfe90a
 langcode: en
 status: true
 dependencies:
@@ -11,7 +11,7 @@ _core:
 id: solych_theme_site_branding
 theme: solych_theme
 region: header
-weight: 4
+weight: 0
 provider: null
 plugin: system_branding_block
 settings:
