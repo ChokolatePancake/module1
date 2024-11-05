@@ -10,11 +10,12 @@
           previewContainer.html('<img src="' + src + '" alt="Photo preview" style="max-width: 200px; max-height: 200px;">');
         };
 
-        if (drupalSettings.solych && drupalSettings.solych.photoPreviewUrl) {
+        if (!previewContainer.data('file-changed') && drupalSettings.solych && drupalSettings.solych.photoPreviewUrl) {
           loadPreview(drupalSettings.solych.photoPreviewUrl);
         }
 
         $(fileInput).on('change', function (e) {
+          previewContainer.data('file-changed', true);
           previewContainer.empty();
           if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
